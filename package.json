@@ -4,7 +4,8 @@
   "description": "Full Stack Application",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "devStart": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,15 @@
   "bugs": {
     "url": "https://github.com/Nikhil667/full-stack-app/issues"
   },
-  "homepage": "https://github.com/Nikhil667/full-stack-app#readme"
+  "homepage": "https://github.com/Nikhil667/full-stack-app#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^7.0.1",
+    "node-modules": "^0.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
 }
