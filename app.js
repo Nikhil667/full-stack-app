@@ -1,7 +1,14 @@
 // console.log("first")
+if(process.env.NODE_ENV !== 'production'){
+  require('dotenv').config()
+} 
+
 const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
+
+var cors = require('cors')
+const stripe = require('stripe')(process.env.STRIPE_ID)
 
 const dbConnect = require("./database/dbConnect");
 const User = require("./database/userModel");
@@ -11,6 +18,10 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const auth = require("./auth");
+
+app.use(cors());
+app.use(express.static("public"));
+app.use(express.json());
 
 // body parser configuration
 app.use(bodyParser.json());
@@ -32,6 +43,47 @@ app.use((req, res, next) => {
   next();
 });
 
+app.post("/checkout", async (request, response) => {
+  /*
+    req.body.items
+    [
+        {
+            id: 1,
+            quantity: 3
+        }
+    ]
+    stripe wants
+    [
+        {
+            price: 1,
+            quantity: 3
+        }
+    ]
+    */
+    console.log(request.body);
+    const items = request.body.items;
+    let lineItems = [];
+    items.forEach((item)=> {
+        lineItems.push(
+            {
+                price: item.id,
+                quantity: item.quantity
+            }
+        )
+    });
+
+    const session = await stripe.checkout.sessions.create({
+        line_items: lineItems,
+        mode: 'payment',
+        success_url: "http://localhost:3000/success",
+        cancel_url: "http://localhost:3000/cancel"
+    });
+
+    response.send(JSON.stringify({
+        url: session.url
+    }));
+
+})
 
 app.post("/register", (request, response) => {
     bcrypt
@@ -123,7 +175,7 @@ app.post("/login", (request, response) => {
 })
 
 app.get("/", (request, response, next) => {
-  response.json({ message: "Hey! This is your server response!" });
+  response.json({ message: "Hey! asd This is your server response!" });
   next();
 });
 
